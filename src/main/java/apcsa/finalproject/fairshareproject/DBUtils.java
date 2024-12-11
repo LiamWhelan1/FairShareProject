@@ -550,6 +550,7 @@ public class DBUtils {
     }
 
     private static HashMap<String, ArrayList<Object>> getTransactions(String user) {
+        // Method implementation in progress
         return new HashMap<>();
     }
 }

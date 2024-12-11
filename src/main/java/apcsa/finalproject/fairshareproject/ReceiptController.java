@@ -58,7 +58,7 @@ public class ReceiptController {
 
     @FXML
     void logIn(ActionEvent event) {
-        DBUtils.changeScene(event, "LogInPage.fxml", "Log In");
+        DBUtils.changeSceneMenuItem(event, "LogInPage.fxml", "Log In", logoutButton);
     }
 
     @FXML

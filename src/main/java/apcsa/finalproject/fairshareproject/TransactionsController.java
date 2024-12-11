@@ -52,7 +52,7 @@ public class TransactionsController {
     @FXML
     void logOut(ActionEvent event) {
         FairShare.user = null;
-        DBUtils.changeScene(event, "MainPage.fxml", "Fair Share");
+        DBUtils.changeSceneMenuItem(event, "MainPage.fxml", "Fair Share", logoutButton);
     }
 
     @FXML
