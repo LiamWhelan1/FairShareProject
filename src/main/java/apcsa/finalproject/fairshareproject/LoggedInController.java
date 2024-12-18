@@ -93,7 +93,7 @@ public class LoggedInController implements Initializable {
     @FXML
     void logOut(ActionEvent event) {
         FairShare.user = null;
-        DBUtils.changeScene(event, "MainPage.fxml", "Fair Share");
+        DBUtils.changeSceneMenuItem(event, "MainPage.fxml", "Fair Share", logoutButton);
     }
 
     @FXML
@@ -105,9 +105,11 @@ public class LoggedInController implements Initializable {
             DBUtils.saveEvent(eventName, date, FairShare.user.getName());
         }
         for (User friend: friends) {
-            double amount = friend.getDue();
-            String currency = friend.getCurrency();
-            DBUtils.saveTransaction(friend.getName(), eventName, transactionName, amount, currency, FairShare.user.getName());
+            if (friend.isIncluded()) {
+                double amount = friend.getDue();
+                String currency = friend.getCurrency();
+                DBUtils.saveTransaction(friend.getName(), eventName, transactionName, amount, currency, FairShare.user.getName());
+            }
         }
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setContentText(transactionName +" saved");

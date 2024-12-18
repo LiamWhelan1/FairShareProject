@@ -48,7 +48,7 @@ public class ReceiptController {
     @FXML
     void logOut(ActionEvent event) {
         FairShare.user = null;
-        DBUtils.changeScene(event, "MainPage.fxml", "Fair Share");
+        DBUtils.changeSceneMenuItem(event, "MainPage.fxml", "Fair Share", logoutButton);
     }
 
     @FXML
@@ -58,7 +58,7 @@ public class ReceiptController {
 
     @FXML
     void logIn(ActionEvent event) {
-        DBUtils.changeSceneMenuItem(event, "LogInPage.fxml", "Log In", logoutButton);
+        DBUtils.changeScene(event, "LogInPage.fxml", "Log In");
     }
 
     @FXML

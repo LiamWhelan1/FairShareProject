@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -416,6 +417,49 @@ public class DBUtils {
         return currency;
     }
 
+    public static String getUser(int userId) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String user = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fair_share", "liamWhelan", "");
+            ps = connection.prepareStatement("SELECT username FROM users WHERE user_id = ?");
+            ps.setInt(1, userId);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    user = rs.getString("username");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return user;
+    }
+
     public static ArrayList<User> getFriendsAsUsers(String user) {
         ArrayList<String> friends = getFriends(user);
         ArrayList<User> friendsAsUsers = new ArrayList<>();
@@ -549,8 +593,56 @@ public class DBUtils {
         return eventId;
     }
 
-    private static HashMap<String, ArrayList<Object>> getTransactions(String user) {
-        // Method implementation in progress
-        return new HashMap<>();
+    public static HashMap<String, ArrayList<Transaction>> getTransactions(String user) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        HashMap<String, ArrayList<Transaction>> transactions = new HashMap<>();
+        try {
+            Integer userId = getUserId(user);
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fair_share", "liamWhelan", "");
+            ps = connection.prepareStatement("SELECT e.event_name, t.transaction_name, t.amount, t.created_by, t.payment_status FROM transactions t LEFT JOIN events e ON t.event_id = e.event_id WHERE t.user_id = ? ORDER BY t.created_at");
+            ps.setInt(1, userId);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                while (rs.next()) {
+                    String eventName = rs.getString("event_name");
+                    String transactionName = rs.getString("transaction_name");
+                    Double amount = rs.getDouble("amount");
+                    int createdBy = rs.getInt("created_by");
+                    String status = rs.getString("payment_status");
+                    Transaction transaction = new Transaction(transactionName, amount, "You owe "+getUser(createdBy), status);
+                    if (!transactions.containsKey(eventName)) {
+                        transactions.put(eventName, new ArrayList<>());
+                    }
+                    transactions.get(eventName).add(transaction);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return transactions;
     }
 }
