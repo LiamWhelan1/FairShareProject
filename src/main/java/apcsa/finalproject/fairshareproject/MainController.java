@@ -116,7 +116,7 @@ public class MainController implements Initializable {
                 try {
                     Integer.parseInt(newValue);
                 } catch (NumberFormatException e) {
-                    totalCostField.setText(oldValue);
+                    numPeopleField.setText(oldValue);
                 }
             }
         });
