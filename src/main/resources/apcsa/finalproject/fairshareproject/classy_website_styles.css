@@ -140,3 +140,11 @@
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
 }
+
+.tree-table-view {
+    -fx-background-color: #7d6cbd;
+}
+
+.tree-table-view .column-header {
+    -fx-background-color: #663c85;
+}
