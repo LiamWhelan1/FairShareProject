@@ -1,14 +1,20 @@
 package apcsa.finalproject.fairshareproject;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.VBox;
 
-public class TransactionsController {
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
+public class TransactionsController implements Initializable {
 
     @FXML
     private Button homeButton;
@@ -18,9 +24,6 @@ public class TransactionsController {
 
     @FXML
     private Label title;
-
-    @FXML
-    private VBox transactionsList;
 
     @FXML
     private MenuItem uploadReceipt;
@@ -33,6 +36,21 @@ public class TransactionsController {
 
     @FXML
     private MenuItem viewTransactions;
+
+    @FXML
+    private TreeTableView<Transaction> owedTableView;
+
+    @FXML
+    private TreeTableColumn<Transaction, String> transactionColumn;
+
+    @FXML
+    private TreeTableColumn<Transaction, Double> amountColumn;
+
+    @FXML
+    private TreeTableColumn<Transaction, String> descriptionColumn;
+
+    @FXML
+    private TreeTableColumn<Transaction, String> statusColumn;
 
     @FXML
     void doUploadReceipt(ActionEvent event) {
@@ -70,4 +88,43 @@ public class TransactionsController {
         DBUtils.changeScene(event, "SignUpPage.fxml", "Sign Up");
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        userMenu.setText(FairShare.user.getName());
+        transactionColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+        amountColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("amount"));
+        descriptionColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
+        statusColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("status"));
+
+        owedTableView.setRoot(loadTransactions());
+        owedTableView.setShowRoot(false);
+    }
+
+    private TreeItem<Transaction> loadTransactions() {
+        TreeItem<Transaction> root = new TreeItem<>();
+
+        ObservableList<TreeItem<Transaction>> eventGroups = FXCollections.observableArrayList();
+        HashMap<String, ArrayList<Transaction>> transactions = DBUtils.getTransactions(FairShare.user.getName());
+        for (String event: transactions.keySet()) {
+            eventGroups.add(createEventGroup(event, FXCollections.observableArrayList(transactions.get(event))));
+        }
+
+        root.getChildren().addAll(eventGroups);
+        return root;
+    }
+
+    private TreeItem<Transaction> createEventGroup(String event, ObservableList<Transaction> transactions) {
+        double sum = 0.0;
+        for (Transaction t: transactions) {
+            sum += t.getAmount();
+        }
+        TreeItem<Transaction> eventGroup = new TreeItem<>(new Transaction(event, sum, "", ""));
+        eventGroup.setExpanded(true);
+
+        for (Transaction t : transactions) {
+            eventGroup.getChildren().add(new TreeItem<>(t));
+        }
+
+        return eventGroup;
+    }
 }
