@@ -192,15 +192,15 @@ public class LoggedInController implements Initializable {
             friendsList.getChildren().add(row);
 
             friend.dueProperty().addListener((observable, oldValue, newValue) -> {
-                portionLabel.setText(friend.isIncluded() ? String.format("%.2f "+friend.getCurrency(), friend.getDue()) : "");
+                portionLabel.setText(friend.isIncluded() ? String.format("%s%.2f ", CurrencyMap.getCurrencyMap().get(friend.getCurrency()), friend.getDue()) : "");
             });
         }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        currencySelection.getItems().addAll("USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "SEK", "MXN", "NZD",
-                "SGD", "HKD", "NOK", "KRW", "TRY", "INR", "RUB", "BRL", "ZAR", "DKK", "PLN", "TWD", "THB", "MYR");
+        currencySelection.getItems().addAll(CurrencyMap.getCurrencyMap().keySet().stream().sorted().toList());
+        currencySelection.getSelectionModel().select("USD");
         userMenu.setText(FairShare.user.getName());
         friends.addAll(DBUtils.getFriendsAsUsers(FairShare.user.getName()));
         refreshFriendsList();

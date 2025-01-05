@@ -608,7 +608,7 @@ public class DBUtils {
                 while (rs.next()) {
                     String eventName = rs.getString("event_name");
                     String transactionName = rs.getString("transaction_name");
-                    Double amount = rs.getDouble("amount");
+                    double amount = rs.getDouble("amount");
                     int createdBy = rs.getInt("created_by");
                     String status = rs.getString("payment_status");
                     Transaction transaction = new Transaction(transactionName, amount, "You owe "+getUser(createdBy), status);

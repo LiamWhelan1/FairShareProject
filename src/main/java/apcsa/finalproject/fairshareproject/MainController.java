@@ -72,13 +72,13 @@ public class MainController implements Initializable {
         String newCurrency = newCurrencyField.getSelectionModel().getSelectedItem();
         double due = total / numPeople;
         if (newCurrency.isEmpty()||currency.equals(newCurrency)) {
-            perPersonNotSUp.setText(String.format("Cost per person: %.2f "+currency, due));
+            perPersonNotSUp.setText(String.format("Cost per person: %s%.2f ", CurrencyMap.getCurrencyMap().get(currency), due));
         } else if (currency.isEmpty()) {
-            perPersonNotSUp.setText(String.format("Cost per person: %.2f "+newCurrency, due));
+            perPersonNotSUp.setText(String.format("Cost per person: %s%.2f ", CurrencyMap.getCurrencyMap().get(newCurrency), due));
         } else {
             try {
                 due = CurrencyConverter.convertCurrency(due, currency, newCurrency);
-                perPersonNotSUp.setText(String.format("Cost per person: %.2f "+newCurrency, due));
+                perPersonNotSUp.setText(String.format("Cost per person: %s%.2f ", CurrencyMap.getCurrencyMap().get(newCurrency), due));
             } catch (IOException | JSONException e) {
                 System.out.println("Error fetching exchange rates: " + e.getMessage());
             }
@@ -98,10 +98,10 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        currencyField.getItems().addAll("USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "SEK", "MXN", "NZD",
-                "SGD", "HKD", "NOK", "KRW", "TRY", "INR", "RUB", "BRL", "ZAR", "DKK", "PLN", "TWD", "THB", "MYR");
-        newCurrencyField.getItems().addAll("USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "SEK", "MXN", "NZD",
-                "SGD", "HKD", "NOK", "KRW", "TRY", "INR", "RUB", "BRL", "ZAR", "DKK", "PLN", "TWD", "THB", "MYR");
+        currencyField.getItems().addAll(CurrencyMap.getCurrencyMap().keySet().stream().sorted().toList());
+        currencyField.getSelectionModel().select("USD");
+        newCurrencyField.getItems().addAll(CurrencyMap.getCurrencyMap().keySet().stream().sorted().toList());
+        newCurrencyField.getSelectionModel().select("USD");
         totalCostField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 try {
